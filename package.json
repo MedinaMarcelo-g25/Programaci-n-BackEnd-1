@@ -1,0 +1,15 @@
+{
+  "name": "proyecto-backend-coderhouse",
+  "version": "1.0.0",
+  "description": "Servidor para gestionar productos y carritos de compra en una API.",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "fs": "^0.0.1-security"
+  },
+  "author": "Medina Marcelo Gustavo",
+  "license": "ISC"
+}
