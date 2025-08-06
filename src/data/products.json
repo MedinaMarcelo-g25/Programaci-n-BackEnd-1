@@ -1,1 +1,46 @@
-[]
+[
+  {
+    "id": 1,
+    "title": "iPhone 15 Pro Max",
+    "description": "Apple iPhone 15 Pro Max 256GB, Titanium, pantalla Super Retina XDR",
+    "code": "IPH15PM256",
+    "price": 1200000,
+    "status": true,
+    "stock": 15,
+    "category": "Celulares",
+    "thumbnails": ["img/iphone15promax.jpg"]
+  },
+  {
+    "id": 2,
+    "title": "Samsung Galaxy S24 Ultra",
+    "description": "Samsung Galaxy S24 Ultra 512GB, Phantom Black, cámara 200MP",
+    "code": "SGS24U512",
+    "price": 1100000,
+    "status": true,
+    "stock": 10,
+    "category": "Celulares",
+    "thumbnails": ["img/galaxys24ultra.jpg"]
+  },
+  {
+    "id": 3,
+    "title": "Xiaomi 14 Pro",
+    "description": "Xiaomi 14 Pro 256GB, pantalla AMOLED, Snapdragon 8 Gen 3",
+    "code": "XIA14P256",
+    "price": 800000,
+    "status": true,
+    "stock": 20,
+    "category": "Celulares",
+    "thumbnails": ["img/xiaomi14pro.jpg"]
+  },
+  {
+    "id": 4,
+    "title": "Google Pixel 8 Pro",
+    "description": "Google Pixel 8 Pro 128GB, cámara avanzada, Android 14",
+    "code": "PIX8P128",
+    "price": 950000,
+    "status": true,
+    "stock": 12,
+    "category": "Celulares",
+    "thumbnails": ["img/pixel8pro.jpg"]
+  }
+]
