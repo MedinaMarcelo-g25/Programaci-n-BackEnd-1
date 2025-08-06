@@ -1,7 +1,7 @@
 const express = require('express');
-const CartManager = require('../managers/CartManager');
-
 const router = express.Router();
+
+const CartManager = require('../managers/CartManager');
 const cartManager = new CartManager();
 
 router.post('/', async (req, res) => {
@@ -9,32 +9,34 @@ router.post('/', async (req, res) => {
         const newCart = await cartManager.createCart();
         res.status(201).json(newCart);
     } catch (error) {
-        res.status(500).json({ message: 'Error al crear el carrito', error });
+        res.status(500).json({ error: 'Error al crear el carrito' });
     }
 });
 
 router.get('/:cid', async (req, res) => {
-    const { cid } = req.params;
     try {
-        const cart = await cartManager.getCartById(cid);
-        if (!cart) {
-            return res.status(404).json({ message: 'No se encontró el carrito' });
+        const cart = await cartManager.getCartById(Number(req.params.cid));
+        if (cart) {
+            res.json(cart.products);
+        } else {
+            res.status(404).json({ error: 'El carrito no existe' });
         }
-        res.json(cart.products);
     } catch (error) {
-        res.status(500).json({ message: 'Error al obtener el carrito', error });
+        res.status(500).json({ error: 'Error al obtener el carrito' });
     }
 });
 
 router.post('/:cid/product/:pid', async (req, res) => {
-    const { cid, pid } = req.params;
-    const { quantity } = req.body;
-
     try {
-        const updatedCart = await cartManager.addProductToCart(cid, pid, quantity);
-        res.json(updatedCart);
+        const { cid, pid } = req.params;
+        const updatedCart = await cartManager.addProductToCart(Number(cid), Number(pid));
+        if (updatedCart) {
+            res.json(updatedCart);
+        } else {
+            res.status(404).json({ error: 'El carrito no existe o el producto no es válido' });
+        }
     } catch (error) {
-        res.status(500).json({ message: 'Error al agregar el producto al carrito', error });
+        res.status(500).json({ error: 'Error al agregar producto al carrito' });
     }
 });
 
