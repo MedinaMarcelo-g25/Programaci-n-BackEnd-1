@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Lista de Productos</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Lista de productos</h1>
+    <ul class="product-list">
+      {{#each products}}
+        <li>
+          <strong>{{title}}</strong> - ${{price}}
+          <span class="category">{{category}}</span>
+        </li>
+      {{/each}}
+    </ul>
+
+    <h2>Agregar producto</h2>
+    <form action="/api/products" method="POST" class="add-form">
+      <input type="text" name="title" placeholder="Título" required>
+      <input type="text" name="description" placeholder="Descripción" required>
+      <input type="text" name="code" placeholder="Código" required>
+      <input type="number" name="price" placeholder="Precio" required>
+      <input type="number" name="stock" placeholder="Stock" required>
+      <input type="text" name="category" placeholder="Categoría" required>
+      <input type="text" name="thumbnails" placeholder="Thumbnails (separados por coma)">
+      <button type="submit">Agregar</button>
+    </form>
+  </div>
+</body>
+</html>

@@ -8,24 +8,16 @@ class CartManager {
     }
 
     async loadCarts() {
-        try {
-            if (fs.existsSync(filePath)) {
-                const data = await fs.promises.readFile(filePath, 'utf-8');
-                this.carts = JSON.parse(data);
-            } else {
-                this.carts = [];
-            }
-        } catch (error) {
+        if (fs.existsSync(filePath)) {
+            const data = await fs.promises.readFile(filePath, 'utf-8');
+            this.carts = JSON.parse(data);
+        } else {
             this.carts = [];
         }
     }
 
     async saveCarts() {
-        try {
-            await fs.promises.writeFile(filePath, JSON.stringify(this.carts, null, 2));
-        } catch (error) {
-            console.error('Error al guardar carritos:', error);
-        }
+        await fs.promises.writeFile(filePath, JSON.stringify(this.carts, null, 2));
     }
 
     async createCart() {
@@ -60,7 +52,8 @@ class CartManager {
     }
 
     generateId() {
-        return this.carts.length > 0 ? Math.max(...this.carts.map(cart => cart.id)) + 1 : 1;
+        if (this.carts.length === 0) return 1;
+        return Math.max(...this.carts.map(c => typeof c.id === 'number' ? c.id : parseInt(c.id))) + 1;
     }
 }
 

@@ -8,7 +8,9 @@
     "status": true,
     "stock": 15,
     "category": "Celulares",
-    "thumbnails": ["img/iphone15promax.jpg"]
+    "thumbnails": [
+      "img/iphone15promax.jpg"
+    ]
   },
   {
     "id": 2,
@@ -19,7 +21,9 @@
     "status": true,
     "stock": 10,
     "category": "Celulares",
-    "thumbnails": ["img/galaxys24ultra.jpg"]
+    "thumbnails": [
+      "img/galaxys24ultra.jpg"
+    ]
   },
   {
     "id": 3,
@@ -30,7 +34,9 @@
     "status": true,
     "stock": 20,
     "category": "Celulares",
-    "thumbnails": ["img/xiaomi14pro.jpg"]
+    "thumbnails": [
+      "img/xiaomi14pro.jpg"
+    ]
   },
   {
     "id": 4,
@@ -41,6 +47,8 @@
     "status": true,
     "stock": 12,
     "category": "Celulares",
-    "thumbnails": ["img/pixel8pro.jpg"]
+    "thumbnails": [
+      "img/pixel8pro.jpg"
+    ]
   }
 ]

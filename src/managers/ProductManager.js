@@ -8,15 +8,10 @@ class ProductManager {
     }
 
     async loadProducts() {
-        try {
-            if (fs.existsSync(filePath)) {
-                const data = await fs.promises.readFile(filePath, 'utf-8');
-                this.products = JSON.parse(data);
-            } else {
-                this.products = [];
-            }
-        } catch (error) {
-            console.error('Error al cargar productos:', error);
+        if (fs.existsSync(filePath)) {
+            const data = await fs.promises.readFile(filePath, 'utf-8');
+            this.products = JSON.parse(data);
+        } else {
             this.products = [];
         }
     }
@@ -64,13 +59,11 @@ class ProductManager {
 
     async deleteProduct(id) {
         await this.loadProducts();
-        const productIndex = this.products.findIndex(product => product.id === id);
-        if (productIndex === -1) {
-            return null;
-        }
-        const deletedProduct = this.products.splice(productIndex, 1);
+        const index = this.products.findIndex(p => p.id === id);
+        if (index === -1) return false;
+        this.products.splice(index, 1);
         await this.saveProducts();
-        return deletedProduct;
+        return true;
     }
 }
 
