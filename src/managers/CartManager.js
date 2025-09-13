@@ -57,4 +57,4 @@ class CartManager {
     }
 }
 
-module.exports = CartManager;
+//module.exports = CartManager;

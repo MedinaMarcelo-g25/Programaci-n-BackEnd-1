@@ -7,9 +7,13 @@
     "start": "node src/app.js"
   },
   "dependencies": {
+    "dotenv": "^17.2.2",
     "express": "^4.17.1",
     "express-handlebars": "^8.0.1",
     "fs": "^0.0.1-security",
+    "mongodb": "^6.19.0",
+    "mongoose": "^8.18.0",
+    "mongoose-paginate-v2": "^1.9.1",
     "socket.io": "^4.8.1"
   },
   "author": "Medina Marcelo Gustavo",

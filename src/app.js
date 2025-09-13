@@ -2,13 +2,32 @@ const express = require('express');
 const { Server } = require('socket.io');
 const { engine } = require('express-handlebars');
 const path = require('path');
-const ProductManager = require('./managers/ProductManager');
+const ProductManagerMongo = require('./managers/ProductManagerMongo');
+const mongoose = require('mongoose');
+const { connectDB } = require('./config/db');
+const { dbConfig } = require('./config/config');
 
 const app = express();
-const productManager = new ProductManager();
+const productManager = ProductManagerMongo; 
 
-app.engine('hbs', engine({ extname: 'hbs' }));
-app.set('view engine', 'hbs');
+const exphbs = require('express-handlebars');
+const Handlebars = require('handlebars');
+
+const hbs = exphbs.create({
+  helpers: {
+    range: function(start, end, options) {
+      let arr = [];
+      for (let i = start; i <= end; i++) arr.push(i);
+      return arr;
+    },
+    ifEquals: function(arg1, arg2, options) {
+      return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
+    }
+  }
+});
+
+app.engine('handlebars', hbs.engine);
+app.set('view engine', 'handlebars');
 app.set('views', path.join(__dirname, 'views'));
 
 app.use(express.json());
@@ -19,7 +38,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 const viewsRouter = require('./routes/views');
 app.use('/', viewsRouter);
 
-const PORT = 8080;
+const PORT = dbConfig.PORT;
 const httpServer = app.listen(PORT, () => {
     console.log(`Servidor escuchando en el puerto ${PORT}`);
 });
@@ -28,20 +47,23 @@ const io = new Server(httpServer);
 app.set('io', io);
 
 io.on('connection', async (socket) => {
-  const products = await productManager.getAllProducts();
-  socket.emit('products', products);
+  const products = await productManager.getAll(); 
+  socket.emit('products', products.docs); 
 
   socket.on('addProduct', async (data) => {
-    await productManager.addProduct({ ...data, description: '', code: '', status: true, stock: 1, category: '', thumbnails: [] });
-    const updatedProducts = await productManager.getAllProducts();
-    io.emit('products', updatedProducts);
+    await productManager.create({ ...data, description: '', code: '', status: true, stock: 1, category: '', thumbnails: [] });
+    const updatedProducts = await productManager.getAll();
+    io.emit('products', updatedProducts.docs);
   });
 
   socket.on('deleteProduct', async (id) => {
-    await productManager.deleteProduct(Number(id));
-    const updatedProducts = await productManager.getAllProducts();
-    io.emit('products', updatedProducts);
+    await productManager.delete(id);
+    const updatedProducts = await productManager.getAll();
+    io.emit('products', updatedProducts.docs);
   });
 });
 
-module.exports = app;
+connectDB(
+  dbConfig.MONGO_URL,
+  dbConfig.DB_NAME
+)
