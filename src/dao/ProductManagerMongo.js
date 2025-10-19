@@ -1,4 +1,4 @@
-const Product = require('../managers/models/productModel');
+const Product = require('./models/productModel');
 
 class ProductManagerMongo {
     static async getAll(filter = {}, options = {}) {

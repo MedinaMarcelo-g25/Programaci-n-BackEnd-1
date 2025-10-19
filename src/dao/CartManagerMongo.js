@@ -1,4 +1,4 @@
-const Cart = require('../managers/models/cartModel');
+const Cart = require('./models/cartModel');
 
 class CartManagerMongo {
     static async create() {

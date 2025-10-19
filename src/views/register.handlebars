@@ -1,0 +1,13 @@
+{{! extends layout/main si usás layout }}
+<div class="container">
+  <h2>Registro</h2>
+  <form action="/api/users" method="post">
+    <input name="first_name" placeholder="Nombre" required>
+    <input name="last_name" placeholder="Apellido">
+    <input name="email" placeholder="Email" required type="email">
+    <input name="age" placeholder="Edad" type="number">
+    <input name="password" placeholder="Contraseña" required type="password">
+    <button type="submit">Registrarse</button>
+  </form>
+  <p>¿Tenés cuenta? <a href="/login">Ingresar</a></p>
+</div>

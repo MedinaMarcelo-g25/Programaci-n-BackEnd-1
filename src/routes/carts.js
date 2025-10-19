@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const CartManagerMongo = require('../managers/CartManagerMongo');
+const CartManagerMongo = require('../dao/CartManagerMongo');
 
 router.post('/', async (req, res) => {
   try {
@@ -32,10 +32,9 @@ router.post('/:cid/product/:pid', async (req, res) => {
   }
 });
 
-// PUT /api/carts/:cid - Reemplazar todos los productos del carrito
 router.put('/:cid', async (req, res) => {
   try {
-    const { products } = req.body; // [{ product: id, quantity }]
+    const { products } = req.body; 
     const cart = await CartManagerMongo.updateAllProducts(req.params.cid, products);
     if (!cart) return res.status(404).json({ error: 'Carrito no encontrado' });
     res.json(cart);

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const ProductManagerMongo = require('../managers/ProductManagerMongo');
+const ProductManagerMongo = require('../dao/ProductManagerMongo');
 
 router.get('/', async (req, res) => {
   try {

@@ -56,5 +56,3 @@ class CartManager {
         return Math.max(...this.carts.map(c => typeof c.id === 'number' ? c.id : parseInt(c.id))) + 1;
     }
 }
-
-//module.exports = CartManager;

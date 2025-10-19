@@ -2,10 +2,15 @@ const express = require('express');
 const { Server } = require('socket.io');
 const { engine } = require('express-handlebars');
 const path = require('path');
-const ProductManagerMongo = require('./managers/ProductManagerMongo');
+const ProductManagerMongo = require('./dao/ProductManagerMongo');
 const mongoose = require('mongoose');
 const { connectDB } = require('./config/db');
 const { dbConfig } = require('./config/config');
+const passport = require('passport');
+const initializePassport = require('./config/passport.config');
+const sessionsRouter = require('./routes/sessions.router');
+const usersRouter = require('./routes/users.router');
+const { verifyToken } = require('./utils/jwt.utils');
 
 const app = express();
 const productManager = ProductManagerMongo; 
@@ -31,9 +36,32 @@ app.set('view engine', 'handlebars');
 app.set('views', path.join(__dirname, 'views'));
 
 app.use(express.json());
-app.use('/api/products', require('./routes/products'));
-app.use('/api/carts', require('./routes/carts'));
-app.use(express.static(path.join(__dirname, 'public'))); 
+app.use(express.urlencoded({ extended: true }));
+app.use(passport.initialize());
+
+// inicializar passport (archivo debe exportar función que recibe passport)
+initializePassport(passport);
+
+// exponer user en vistas si viene token en header (útil para mostrar info en layout)
+app.use((req, res, next) => {
+  const auth = req.headers.authorization;
+  if (auth && auth.startsWith('Bearer ')) {
+    try {
+      const decoded = verifyToken(auth.split(' ')[1]);
+      res.locals.user = decoded; // disponible en handlebars
+      req.user = decoded;
+    } catch (err) {
+      res.locals.user = null;
+    }
+  } else {
+    res.locals.user = null;
+  }
+  next();
+});
+
+// montar rutas
+app.use('/api/sessions', sessionsRouter);
+app.use('/api/users', usersRouter);
 
 const viewsRouter = require('./routes/views');
 app.use('/', viewsRouter);

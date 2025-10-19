@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const Product = require('./src/managers/models/productModel'); // Ajusta la ruta si es necesario
+const Product = require('./src/dao/models/productModel'); 
 
 const productos = [
   {

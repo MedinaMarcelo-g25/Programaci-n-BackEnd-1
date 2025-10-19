@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const Product = require('../managers/models/productModel');
-const Cart = require('../managers/models/cartModel');
-const ProductManagerMongo = require('../managers/ProductManagerMongo');
+const Product = require('../dao/models/productModel');
+const Cart = require('../dao/models/cartModel');
+const ProductManagerMongo = require('../dao/ProductManagerMongo');
+const passport = require('passport');
 
 router.get('/home', async (req, res) => {
   const result = await ProductManagerMongo.getAll({}, { lean: true, limit: 100 });
@@ -62,6 +63,12 @@ router.get('/carts/:cid', async (req, res) => {
   const { cid } = req.params;
   const cart = await Cart.findById(cid).populate('products.product').lean();
   res.render('cart', { cart });
+});
+
+router.get('/register', (req, res) => res.render('register'));
+router.get('/login', (req, res) => res.render('login'));
+router.get('/profile', passport.authenticate('jwt', { session: false }), (req, res) => {
+  res.render('profile', { user: req.user });
 });
 
 module.exports = router;
