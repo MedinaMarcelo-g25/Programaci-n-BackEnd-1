@@ -38,17 +38,14 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(passport.initialize());
-
-// inicializar passport (archivo debe exportar función que recibe passport)
 initializePassport(passport);
 
-// exponer user en vistas si viene token en header (útil para mostrar info en layout)
 app.use((req, res, next) => {
   const auth = req.headers.authorization;
   if (auth && auth.startsWith('Bearer ')) {
     try {
       const decoded = verifyToken(auth.split(' ')[1]);
-      res.locals.user = decoded; // disponible en handlebars
+      res.locals.user = decoded;
       req.user = decoded;
     } catch (err) {
       res.locals.user = null;
@@ -59,7 +56,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// montar rutas
 app.use('/api/sessions', sessionsRouter);
 app.use('/api/users', usersRouter);
 

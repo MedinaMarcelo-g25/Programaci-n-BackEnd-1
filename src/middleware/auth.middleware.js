@@ -1,10 +1,6 @@
 const passport = require('passport');
 const { verifyToken } = require('../utils/jwt.utils');
 
-/**
- * Validar token desde header Authorization: Bearer <token>
- * Pone req.user = decodedToken
- */
 const validateToken = (req, res, next) => {
   const auth = req.headers.authorization;
   if (!auth || !auth.startsWith('Bearer ')) {

@@ -4,7 +4,6 @@ const User = require('../dao/models/userModel');
 const bcrypt = require('bcrypt');
 const { passportAuthenticate, isAdmin, isSelfOrAdmin } = require('../middleware/passport.middleware');
 
-// Registro público
 router.post('/', async (req, res) => {
   try {
     const { first_name, last_name, email, age, password } = req.body;
@@ -13,8 +12,9 @@ router.post('/', async (req, res) => {
     const exists = await User.findOne({ email });
     if (exists) return res.status(400).json({ message: 'Email ya registrado' });
 
-    const hashed = bcrypt.hashSync(password, 10);
-    const user = await User.create({ first_name, last_name, email, age, password: hashed });
+    const user = new User({ first_name, last_name, email, age, password });
+    await user.save();
+
     user.password = undefined;
     res.status(201).json({ user });
   } catch (err) {
@@ -22,7 +22,6 @@ router.post('/', async (req, res) => {
   }
 });
 
-// Obtener todos (admin)
 router.get('/', passportAuthenticate('jwt'), isAdmin, async (req, res) => {
   try {
     const users = await User.find().select('-password').lean();
@@ -32,7 +31,6 @@ router.get('/', passportAuthenticate('jwt'), isAdmin, async (req, res) => {
   }
 });
 
-// Obtener uno (self o admin)
 router.get('/:uid', passportAuthenticate('jwt'), isSelfOrAdmin, async (req, res) => {
   try {
     const user = await User.findById(req.params.uid).select('-password').lean();
@@ -43,7 +41,6 @@ router.get('/:uid', passportAuthenticate('jwt'), isSelfOrAdmin, async (req, res)
   }
 });
 
-// Actualizar (self o admin)
 router.put('/:uid', passportAuthenticate('jwt'), isSelfOrAdmin, async (req, res) => {
   try {
     const update = { ...req.body };
@@ -56,7 +53,6 @@ router.put('/:uid', passportAuthenticate('jwt'), isSelfOrAdmin, async (req, res)
   }
 });
 
-// Eliminar (admin)
 router.delete('/:uid', passportAuthenticate('jwt'), isAdmin, async (req, res) => {
   try {
     await User.findByIdAndDelete(req.params.uid);

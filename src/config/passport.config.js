@@ -2,11 +2,10 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const JWTStrategy = require('passport-jwt').Strategy;
 const ExtractJWT = require('passport-jwt').ExtractJwt;
-const User = require('../dao/models/userModels');
+const User = require('../dao/models/userModel');
 const { JWT_SECRET } = require('../utils/jwt.utils');
 
 const initializePassport = () => {
-    // Estrategia Local
     passport.use('login', new LocalStrategy(
         { usernameField: 'email' },
         async (email, password, done) => {
@@ -22,7 +21,6 @@ const initializePassport = () => {
         }
     ));
 
-    // Estrategia JWT
     passport.use(new JWTStrategy({
         jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
         secretOrKey: JWT_SECRET

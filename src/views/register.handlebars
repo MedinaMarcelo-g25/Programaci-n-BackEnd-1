@@ -1,13 +1,37 @@
 {{! extends layout/main si usás layout }}
 <div class="container">
-  <h2>Registro</h2>
-  <form action="/api/users" method="post">
-    <input name="first_name" placeholder="Nombre" required>
-    <input name="last_name" placeholder="Apellido">
-    <input name="email" placeholder="Email" required type="email">
-    <input name="age" placeholder="Edad" type="number">
-    <input name="password" placeholder="Contraseña" required type="password">
-    <button type="submit">Registrarse</button>
-  </form>
-  <p>¿Tenés cuenta? <a href="/login">Ingresar</a></p>
+  <div class="form-container fade-in">
+    <h2 class="text-center mb-4"><i class="fas fa-user-plus"></i> Registro</h2>
+    <form action="/api/users" method="post" class="needs-validation" novalidate>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="first_name" class="form-label">Nombre</label>
+                <input type="text" class="form-control" name="first_name" required>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="last_name" class="form-label">Apellido</label>
+                <input type="text" class="form-control" name="last_name" required>
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" name="email" required>
+        </div>
+        <div class="mb-3">
+            <label for="age" class="form-label">Edad</label>
+            <input type="number" class="form-control" name="age" required>
+        </div>
+        <div class="mb-3">
+            <label for="password" class="form-label">Contraseña</label>
+            <input type="password" class="form-control" name="password" required>
+        </div>
+        <button type="submit" class="btn btn-primary w-100">
+            Registrarse <i class="fas fa-user-check ms-2"></i>
+        </button>
+    </form>
+    <div class="text-center mt-4">
+        <p class="text-muted">¿Ya tienes cuenta? 
+            <a href="/login" class="text-primary">Ingresa aquí</a>
+        </p>
+    </div>
 </div>

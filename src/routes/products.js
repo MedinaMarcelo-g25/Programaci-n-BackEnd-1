@@ -41,7 +41,7 @@ router.get('/', async (req, res) => {
       hasPrevPage: result.hasPrevPage,
       hasNextPage: result.hasNextPage,
       limit,
-      cartId: "ID_DEL_CARRITO" // reemplaza por el real si tienes auth
+      cartId: "ID_DEL_CARRITO"
     });
   } catch (error) {
     res.status(500).json({ status: 'error', error: error.message });
