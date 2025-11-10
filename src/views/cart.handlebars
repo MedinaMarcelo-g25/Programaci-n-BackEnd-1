@@ -1,35 +1,86 @@
 <div class="container">
-  <h1>Carrito</h1>
-  {{#if cart.products.length}}
-    <ul id="cart-list">
-      {{#each cart.products}}
-        <li class="product-card">
-          <h4>{{this.product.title}}</h4>
-          <p>Cantidad: 
-            <button class="qty-btn" onclick="updateQty('{{../cart._id}}','{{this.product._id}}',{{subtract this.quantity 1}})">-</button>
-            <span id="qty-{{this.product._id}}">{{this.quantity}}</span>
-            <button class="qty-btn" onclick="updateQty('{{../cart._id}}','{{this.product._id}}',{{add this.quantity 1}})">+</button>
-          </p>
-          <button class="remove-btn" onclick="removeFromCart('{{../cart._id}}','{{this.product._id}}')">Eliminar</button>
-        </li>
-      {{/each}}
-    </ul>
-  {{else}}
-    <p>El carrito está vacío.</p>
-  {{/if}}
+    <h2>Mi Carrito</h2>
+    <div id="cartContainer" class="mt-4">
+        <p>Cargando...</p>
+    </div>
 </div>
+
 <script>
-function updateQty(cartId, productId, newQty) {
-  if(newQty < 1) return;
-  fetch(`/api/carts/${cartId}/products/${productId}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ quantity: newQty })
-  }).then(() => location.reload());
+document.addEventListener('DOMContentLoaded', loadCart);
+
+async function loadCart() {
+    try {
+        const response = await fetch('/api/cart', {
+            credentials: 'same-origin'
+        });
+
+        if (!response.ok) {
+            throw new Error('Error al cargar el carrito');
+        }
+
+        const data = await response.json();
+        const cart = data.cart;
+
+        if (!cart || !cart.products || cart.products.length === 0) {
+            document.getElementById('cartContainer').innerHTML = '<p>No hay productos en el carrito</p>';
+            return;
+        }
+
+        let total = 0;
+        let html = '<div class="table-responsive"><table class="table">';
+        html += '<thead><tr><th>Producto</th><th>Cantidad</th><th>Precio</th><th>Subtotal</th></tr></thead><tbody>';
+
+        cart.products.forEach(item => {
+            const subtotal = item.quantity * item.product.price;
+            total += subtotal;
+            html += `
+                <tr>
+                    <td>${item.product.title}</td>
+                    <td>${item.quantity}</td>
+                    <td>$${item.product.price}</td>
+                    <td>$${subtotal}</td>
+                </tr>
+            `;
+        });
+
+        html += `
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                    <td>$${total}</td>
+                </tr>
+            </tfoot>
+            </table></div>
+            <button onclick="checkout()" class="btn btn-success mt-3">Finalizar Compra</button>
+        `;
+
+        document.getElementById('cartContainer').innerHTML = html;
+    } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('cartContainer').innerHTML = 
+            '<div class="alert alert-danger">Error al cargar el carrito</div>';
+    }
 }
-function removeFromCart(cartId, productId) {
-  fetch(`/api/carts/${cartId}/products/${productId}`, {
-    method: 'DELETE'
-  }).then(() => location.reload());
+
+async function checkout() {
+    try {
+        const response = await fetch('/api/cart/checkout', {
+            method: 'POST',
+            credentials: 'same-origin'
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            alert('¡Compra finalizada! Orden: ' + data.orderId);
+            window.location.reload();
+        } else {
+            throw new Error(data.message || 'Error al finalizar la compra');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert(error.message);
+    }
 }
 </script>

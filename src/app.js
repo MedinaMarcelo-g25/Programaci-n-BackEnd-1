@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const { Server } = require('socket.io');
 const { engine } = require('express-handlebars');
@@ -11,6 +12,8 @@ const initializePassport = require('./config/passport.config');
 const sessionsRouter = require('./routes/sessions.router');
 const usersRouter = require('./routes/users.router');
 const { verifyToken } = require('./utils/jwt.utils');
+const cookieParser = require('cookie-parser');
+const cartsRouter = require('./routes/carts');
 
 const app = express();
 const productManager = ProductManagerMongo; 
@@ -40,27 +43,42 @@ app.use(express.urlencoded({ extended: true }));
 app.use(passport.initialize());
 initializePassport(passport);
 
-app.use((req, res, next) => {
-  const auth = req.headers.authorization;
-  if (auth && auth.startsWith('Bearer ')) {
-    try {
-      const decoded = verifyToken(auth.split(' ')[1]);
-      res.locals.user = decoded;
-      req.user = decoded;
-    } catch (err) {
-      res.locals.user = null;
-    }
-  } else {
+app.use(cookieParser());
+
+app.use(async (req, res, next) => {
+  const token = req.cookies?.jwt;
+  if (!token) {
     res.locals.user = null;
+    req.user = null;
+    return next();
   }
+
+  try {
+    const decoded = verifyToken(token);
+    const User = require('./dao/models/userModel');
+    const user = await User.findById(decoded.id).lean();
+    if (!user) {
+      res.locals.user = null;
+      req.user = null;
+      return next();
+    }
+
+    req.user = user;        
+    res.locals.user = user; 
+  } catch (err) {
+    console.error('Auth middleware error:', err);
+    res.locals.user = null;
+    req.user = null;
+  }
+
   next();
 });
 
-app.use('/api/sessions', sessionsRouter);
-app.use('/api/users', usersRouter);
-
 const viewsRouter = require('./routes/views');
 app.use('/', viewsRouter);
+app.use('/api/sessions', sessionsRouter);
+app.use('/api/users', usersRouter);
+app.use('/api/cart', cartsRouter);
 
 const PORT = dbConfig.PORT;
 const httpServer = app.listen(PORT, () => {
@@ -91,3 +109,5 @@ connectDB(
   dbConfig.MONGO_URL,
   dbConfig.DB_NAME
 )
+
+module.exports = app;

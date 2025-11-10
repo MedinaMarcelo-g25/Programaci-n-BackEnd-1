@@ -25,32 +25,39 @@
 
 <script>
 document.getElementById('loginForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const alertDiv = document.getElementById('loginAlert');
-    alertDiv.classList.add('d-none');
-    
-    try {
-        const res = await fetch('/api/sessions/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                email: document.getElementById('email').value,
-                password: document.getElementById('password').value
-            })
-        });
+  e.preventDefault();
+  const btn = e.target.querySelector('button[type="submit"]');
+  btn.disabled = true;
 
-        const data = await res.json();
-        
-        if (data.status === 'success' && data.token) {
-            localStorage.setItem('token', data.token);
-            window.location.href = '/profile';
-        } else {
-            throw new Error(data.message || 'Error al iniciar sesión');
-        }
-    } catch (error) {
-        alertDiv.textContent = error.message;
-        alertDiv.classList.remove('d-none');
+  const payload = {
+    email: document.getElementById('email').value,
+    password: document.getElementById('password').value
+  };
+
+  try {
+    const res = await fetch('/api/sessions/login', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (res.ok) {
+      window.location.href = '/profile';
+      return;
     }
+
+    let errBody;
+    try { errBody = await res.json(); } catch (e) { errBody = { message: await res.text() }; }
+    throw new Error(errBody.message || 'Error en el login');
+  } catch (err) {
+    const alertDiv = document.getElementById('loginAlert') || (() => {
+      const d = document.createElement('div'); d.id='loginAlert'; d.className='alert alert-danger'; e.target.prepend(d); return d;
+    })();
+    alertDiv.textContent = err.message;
+    alertDiv.classList.remove('d-none');
+  } finally {
+    btn.disabled = false;
+  }
 });
 </script>

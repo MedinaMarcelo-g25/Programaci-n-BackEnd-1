@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
+const { passportAuthenticate } = require('../middleware/passport.middleware');
 const Product = require('../dao/models/productModel');
 const Cart = require('../dao/models/cartModel');
 const ProductManagerMongo = require('../dao/ProductManagerMongo');
-const passport = require('passport');
 
 router.get('/home', async (req, res) => {
   const result = await ProductManagerMongo.getAll({}, { lean: true, limit: 100 });
@@ -59,16 +59,27 @@ router.get('/products/:pid', async (req, res) => {
   res.render('productDetail', { product, cartId: "ID_DEL_CARRITO" });
 });
 
-router.get('/carts/:cid', async (req, res) => {
+router.get('/cart/:cid', async (req, res) => {
   const { cid } = req.params;
   const cart = await Cart.findById(cid).populate('products.product').lean();
   res.render('cart', { cart });
 });
 
+router.get('/cart', passportAuthenticate('jwt'), (req, res) => {
+  const user = req.user && typeof req.user.toObject === 'function' ? req.user.toObject() : req.user;
+  res.render('cart', { user });
+});
+
 router.get('/register', (req, res) => res.render('register'));
 router.get('/login', (req, res) => res.render('login'));
-router.get('/profile', passport.authenticate('jwt', { session: false }), (req, res) => {
-  res.render('profile', { user: req.user });
+router.get('/profile', passportAuthenticate('jwt'), (req, res) => {
+  try {
+    const user = req.user && typeof req.user.toObject === 'function' ? req.user.toObject() : req.user;
+    res.render('profile', { user });
+  } catch (err) {
+    console.error('Error rendering profile:', err);
+    res.redirect('/login');
+  }
 });
 
 module.exports = router;

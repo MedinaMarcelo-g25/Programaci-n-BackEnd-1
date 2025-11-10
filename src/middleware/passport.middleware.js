@@ -1,8 +1,5 @@
 const passport = require('passport');
 
-/**
- * Usar: passportAuthenticate('jwt') o passportAuthenticate('login')
- */
 const passportAuthenticate = (strategy) => {
   return (req, res, next) => {
     passport.authenticate(strategy, { session: false }, (err, user, info) => {

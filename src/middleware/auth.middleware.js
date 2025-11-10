@@ -26,7 +26,13 @@ const checkRole = (roles = []) => {
   };
 };
 
-module.exports = {
-  validateToken,
-  checkRole
+const authorizeRole = (roles = []) => {
+  return (req, res, next) => {
+    const role = req.user?.role || (req.user && req.user.role);
+    if (!req.user) return res.status(401).json({ status: 'error', message: 'No autenticado' });
+    if (!roles.includes(role)) return res.status(403).json({ status: 'error', message: 'No autorizado' });
+    next();
+  };
 };
+
+module.exports = { validateToken, checkRole, authorizeRole };

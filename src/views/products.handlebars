@@ -4,7 +4,10 @@
     {{#each products}}
       <div class="col-md-4 mb-4">
         <div class="card h-100 shadow">
-          <img src="{{this.thumbnails.[0]}}" class="card-img-top" alt="{{this.title}}" onerror="this.src='https://via.placeholder.com/300x200?text=Sin+Imagen'">
+          <img src="/img/products/{{this.thumbnail}}" 
+               alt="{{this.title}}" 
+               onerror="this.src='/img/placeholder.jpg'"
+               class="card-img-top product-img">
           <div class="card-body">
             <h5 class="card-title">{{this.title}}</h5>
             <p class="card-text">{{this.description}}</p>
@@ -19,7 +22,27 @@
   </div>
 </div>
 <script>
-function addToCart(productId) {
-  alert('Producto agregado al carrito: ' + productId);
+async function addToCart(productId) {
+    try {
+        const response = await fetch(`/api/cart/products/${productId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'same-origin',
+            body: JSON.stringify({ quantity: 1 })
+        });
+
+        const data = await response.json();
+        
+        if (response.ok) {
+            alert('Producto agregado al carrito');
+        } else {
+            throw new Error(data.message || 'Error al agregar al carrito');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert(error.message);
+    }
 }
 </script>
